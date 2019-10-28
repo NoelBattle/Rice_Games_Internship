@@ -46,7 +46,7 @@ int main()
       std::string score;
        if(rounds<=5)
         {score="F";}
-       if(5<rounds&& rounds<10) //18 < age && age < 30
+       if(5<rounds&& rounds<10)
         {score="D";}
         if(9<rounds&& rounds<12)
         {score="C";}
