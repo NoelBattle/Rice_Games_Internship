@@ -5,29 +5,123 @@
 using namespace std;
 class Player
 {
-    public:
-  string m_current;
+    private:
     string name;
     int num_choice;
+    public:
+  string m_current;
+    
+    double newp;
     int wins;
-    double points=0.0;
+    double points;
     int streak=0;
     double score=0.0;
     void set_name(string);  //member function setting the player's name
-    string show_name()      //function that displays the player's name
+    void setpoints(double points)
+    {
+    newp=points;
+   // return "TESTTEST";
+    }
+
+
+    string get_name()      //function that displays the player's name
     {
         return name;
     }
+    int get_numchoice()
+    {
+        return num_choice;
+    }
      void set_weapon(string);//sets the player's weapon
-
 };
 class Game
 {   
     int counter;
     Player a;
     Player b;
+    Player p;
     string weapon;
+    int choices[];
     public:
+    
+  /* streak_func
+     * @param Player &P -> This is the player object
+     * This function occurs when a player wins 3 times in a row, randomizing the 
+     */
+    void streak_func(Player &P){
+        p=P;
+         cout<<p.get_name()<<" won last round (now 3 in a row) with "<<p.m_current<<" and the other player used "<<b.m_current<<". Now,"<<p.get_name()<<"can only choose "<<a.m_current<<" or a randomly generated selection for the next round.\n";
+                cout<<p.get_name()<<"Choose "<<p.m_current<<" or choose x.\n";
+                cin>>weapon;
+                p.set_weapon(weapon);
+                if (p.m_current=="x")
+                {
+                    srand(time(NULL));                  //set seed
+                    int randNum = (rand() % 3) - 1;     //chooses random number from -1 to 1
+                    if(p.get_numchoice()==randNum)           //rerolls if the user choice is is selected at random
+                    {
+                        int randNum = (rand() % 3) - 1;// -
+                    }
+                }
+               
+    }
+      /* streak_points
+     * @param Player &P -> This is the player object
+     * @param int *choice -> This is the player's choice'
+     * @param int counter ->this is aa round counter
+     * This function is used determine the player's points after they are on a winning streak
+     
+     */
+    void streak_points(Player &P, int *choice, int counter){
+         p=P;
+         if (choice[counter-1]==choice[counter-2] && choice[counter-2]==choice[counter-3]) //run if statement if the players last 3 moves has been the same
+                {   
+                    if (counter>3)
+                    {
+                        //cout<<"\nMULTIPLIER";
+                        p.setpoints(p.points*2);           //doubles the players points
+                    }
+                }      
+        if(p.streak==2)
+            {
+                cout<<"streeeeak"<<"\n";
+                p.points=p.points*1.2;
+                p.setpoints(p.points);
+                   // cout<<"sssss"<<p.newp;
+                   // cout<<"tttt"<<a.newp;
+                   // cout<<"uuu"<<b.newp; 
+                }
+                else if(p.streak==3)
+                {
+                   p.setpoints(p.points*1.5);
+                }
+                else if(p.streak==4)
+                {
+                   p.setpoints(p.points*1.8);
+                }
+                else if(p.streak==5)
+                {
+                   p.setpoints(p.points*2);    
+                }
+                 else if(p.streak==6)
+                {
+                   p.setpoints(p.points*2.5);  
+                }
+                else if(p.streak==7)
+                {
+                    p.setpoints(p.points*3);
+                    //cout<<"Player 1 has "<<a.points<<" Player 2 has "<<b.points<<"\n";
+                }
+            if (a.streak>0)
+                {
+                    a.newp=p.newp;
+                }
+            if (b.streak>0)
+                {
+                    b.newp=p.newp;
+                }
+              cout<<"streaak Player 1 has "<<a.newp<<" Player 2 has "<<b.newp<<"\n";   
+    }
       /* start_game
      * @param Player &one -> This is the player 1 object
      * @param Player &two -> This is the player 2 object
@@ -38,7 +132,9 @@ class Game
     string start_game( Player &one, Player &two, int &rounds)
     {
         a=one;
-        b=two; 
+        b=two;
+        a.newp=0.0;
+        b.newp=0.0;
         for (int counter=0; counter<rounds;counter++){
             int a_choices [rounds];                     //makes an array containing player 1's choices
             int b_choices [rounds];                     //makes an array containing player 2's choices
@@ -47,98 +143,79 @@ class Game
             //Logic for 3x and 6x winning streak for player a
             if (a.streak==3 || a.streak==6)
             {
-                cout<<"Player A won last round (now 3 in a row) with "<<a.m_current<<" and Player B used "<<b.m_current<<". Now, Player A can only choose "<<a.m_current<<" or a randomly generated selection for the next round.\n";
-                cout<<a.name<<"Choose "<<a.m_current<<" or choose x.\n";
-                cin>>weapon;
-                a.set_weapon(weapon);
-                if (a.m_current=="x")
-                {
-                    srand(time(NULL));                  //set seed
-                    int randNum = (rand() % 3) - 1;     //chooses random number from -1 to 1
-                    if(a.num_choice==randNum)           //rerolls if the user choice is is selected at random
-                    {
-                        int randNum = (rand() % 3) - 1;// -
-                    }
-                }
-                cout<<b.name<<" Choose r, p or s.\n";
+                streak_func(a);
+                cout<<b.get_name()<<" Choose r, p or s.\n";
                 cin>>weapon;
                 b.set_weapon(weapon);
             }
-
             //Logic for 3x and 6x winning streak for player b
             else if (b.streak==3 || b.streak==6)
             {
+                streak_func(a);
                 cout<<"Player B won last round (now 3 in a row) with "<<b.m_current<<" and Player A used "<<a.m_current<<". Now, Player B can only choose "<<b.m_current<<" or a randomly generated selection for the next round.\n";
-                cout<<a.name<<" Choose r, p or s.\n";
+                cout<<a.get_name()<<" Choose r, p or s.\n";
                 cin>>weapon;
                 a.set_weapon(weapon); 
-                cout<<b.name<<"Choose "<<b.m_current<<" or choose x.\n";
-                if (b.m_current=="x")
-                {
-                    srand(time(NULL));
-                    int randNum = (rand() % 3) - 1;
-                    if(b.num_choice==randNum)
-                    {
-                        int randNum = (rand() % 3) - 1;
-                    }
-                }   
-                cin>>weapon;
-                b.set_weapon(weapon);
             }
             //Logic for game
            else
            {
-                cout<<a.name<<" Choose r, p or s.\n";
+                cout<<a.get_name()<<" Choose r, p or s.\n";
                 cin>>weapon;
                 a.set_weapon(weapon);  
-                cout<<b.name<<" Choose r, p or s.\n";
+                cout<<b.get_name()<<" Choose r, p or s.\n";
                 cin>>weapon;
                 b.set_weapon(weapon);
                // cout<<a.num_choice;
                // cout<<b.num_choice;
                 cout<<"\n";
            }
-            if (a.num_choice<0 && b.num_choice>0)       //if a chooses rock and b chooses scissors
+            if (a.get_numchoice()<0 && b.get_numchoice()>0)       //if a chooses rock and b chooses scissors
             {
-                cout<<a.name<<" wins\n";
-                a.points++;                             //if player wins their points increase by 1
+                cout<<a.get_name()<<" wins\n";
+                a.points++;
+                a.setpoints(a.points++);                             //if player wins their points increase by 1
                 b.streak=0;                             //if player loses their streak is set to 0
                 a.streak++;                             //if player wins their streak is increased by 1
             }
-            else if (a.num_choice==0 && b.num_choice<0) //if player a chooses paper and player b chooses rock
+            else if (a.get_numchoice()==0 && b.get_numchoice()<0) //if player a chooses paper and player b chooses rock
             {
-                cout<<a.name<<" wins\n";
+                cout<<a.get_name()<<" wins\n";
                 a.points++;
+                a.setpoints(a.points);
                 b.streak=0;
                 a.streak++;
             }
-            else if (b.num_choice<0 && a.num_choice>0)  //if player b chooses rock and player a chooses scissors
+            else if (b.get_numchoice()<0 && a.get_numchoice()>0)  //if player b chooses rock and player a chooses scissors
             {
-                cout<<b.name<<" wins\n";
+                cout<<b.get_name()<<" wins\n";
                 b.points++;
+                b.setpoints(b.points);
                 a.streak=0;
                 b.streak++;
             }
-             else if (a.num_choice==0 && b.num_choice>0) //if player a chooses paper and player b chooses scissors
+             else if (a.get_numchoice()==0 && b.get_numchoice()>0) //if player a chooses paper and player b chooses scissors
             {
-                cout<<b.name<<" wins\n";
+                cout<<b.get_name()<<" wins\n";
                 b.points++;
+               b.setpoints(b.points);
                 a.streak=0;
                 b.streak++;
-
             }
-            else if (a.num_choice>0 && b.num_choice==0)  //if player a chooses scissors and player b chooses paper
+            else if (a.get_numchoice()>0 && b.get_numchoice()==0)  //if player a chooses scissors and player b chooses paper
             {
-                cout<<a.name<<" wins\n";
+                cout<<a.get_name()<<" wins\n";
                 a.points++;
+                a.setpoints(a.points);
                 b.streak=0;
                 a.streak++;
             }
-            else if (b.num_choice==0 && a.num_choice<0) //if player b chooses paper and player a chooses rock
+            else if (b.get_numchoice()==0 && a.get_numchoice()<0) //if player b chooses paper and player a chooses rock
             {
                 
-                cout<<b.name<<" wins\n";
+                cout<<b.get_name()<<" wins\n";
                 b.points++;
+                b.setpoints(b.points);
                 a.streak=0;
                 b.streak++;
             }
@@ -146,77 +223,28 @@ class Game
             {
                 cout<<"nobody wins\n";  
             }
-            
-            a_choices[counter]=a.num_choice;            //creates an array of player a's choices
-            b_choices[counter]=b.num_choice;            //creates an array of player b's choices
-        
+            //cout<<"Player 1 has "<<a.newp<<" Player 2 has "<<b.newp<<"\n";
+            a_choices[counter]=a.get_numchoice();            //creates an array of player a's choices
+            b_choices[counter]=b.get_numchoice(); //creates an array of player b's choices
+           
+           
             //streak logic for player a
             if (a.streak>0)
             {
-                if (a_choices[counter-1]==a_choices[counter-2] && a_choices[counter-2]==a_choices[counter-3]) //run if statement if the players last 3 moves has been the same
-                {   
-                    if (counter>3)
-                    {
-                        //cout<<"\nMULTIPLIER";
-                        a.points =a.points*2;           //doubles the players points
-                    }
-                } 
-                //cout<<"streeeeak";
-               if(a.streak==2)
-                {
-                    a.points =a.points*1.2;
-                }
-                else if(a.streak==3)
-                {
-                   a.points= a.points*1.5;
-                }
-                else if(a.streak==4)
-                {
-                   a.points= a.points*1.8;
-                }
-                else if(a.streak==5)
-                {
-                   a.points=  a.points*2;    
-                }
-                 else if(a.streak==6)
-                {
-                   a.points=  a.points*2.5;
-                }
-                else if(a.streak==7)
-                {
-                    a.points= a.points*3;    
-                }
+              streak_points(a,a_choices,counter);
+              //cout<<"Player 1 has "<<a.points<<" Player 2 has "<<b.points<<"\n";  
             }
             //streak logic for player b
             else if (b.streak>0)
             {
-                if(b.streak==2)
-                {
-                    b.points =b.points*1.2;
-                    //cout<<"test"<<b.score;
-                }
-                else if(b.streak==3)
-                {
-                   b.points= b.points*1.5;
-                }
-                else if(b.streak==4)
-                {
-                   b.points= b.points*1.8;
-                }
-                else if(b.streak==5)
-                {
-                   b.points= b.points*2;    
-                }
-                 else if(b.streak==6)
-                {
-                   b.points= b.points*2.5;
-                }
-                else if(b.streak==7)
-                {
-                    b.points= b.points*3;    
-                }
+             streak_points(b,b_choices,counter);
+            // cout<<"Player 1 has "<<a.points<<" Player 2 has "<<b.points<<"\n";  
             }
-            cout<<"Player 1 has "<<a.points<<" Player 2 has "<<b.points<<"\n";  
+           else
+           {
+           cout<<"Player 1 has "<<a.newp<<" Player 2 has "<<b.newp<<"\n";
+           }
+
         }
     return "working";
     }
@@ -241,21 +269,21 @@ void Player::set_weapon(string w)               //function setting player weapon
     }
 }
 int main(){
-  std::string name1;                            //initialize variable type string for the user's name
-  std::string name2;
+  string name1;                            //initialize variable type string for the user's name
+  string name2;
   string weapon;
   int rounds;
-  std::cout<< "Welcome to Rock, Paper, Scissors"<<"\n";
-  std::cout << "What is your name, player 1? "; //ask the user for their name
-  getline (std::cin, name1);
+  cout<< "Welcome to Rock, Paper, Scissors"<<"\n";
+  cout << "What is your name, player 1? "; //ask the user for their name
+  getline (cin, name1);
   Player player1;                               //creates the Player object "player1"
   player1.set_name(name1);                      //calls the set_name function
-  std::cout << "What is your name, player 2? "; //ask the user for their name
-  getline (std::cin, name2);
+  cout << "What is your name, player 2? "; //ask the user for their name
+  getline (cin, name2);
   Player player2;                               //creates the Player object "player2"
   player2.set_name(name2);                      //calls the set_name function
-  std::cout << "How many rounds would you like to play? "; 
-  std::cin>>rounds;
+  cout << "How many rounds would you like to play? "; 
+  cin>>rounds;
   Game new_game;                                //Create new game object
   new_game.start_game(player1,player2,rounds);  //calls the start game function
     return 0;
